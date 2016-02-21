@@ -2,9 +2,16 @@
 
 A simple racing game, set in space.
 
-## To play
+## To install
 
 ```
 $ bundle
+```
+
+## To play
+
+```
 $ ruby main.rb
 ```
+
+Steer the ship with the left and right arrow keys.

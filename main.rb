@@ -13,6 +13,11 @@ class SpaceRace < Gosu::Window
   def draw
     @racer.draw
   end
+
+  def update
+    @racer.move_left if button_down?(Gosu::KbLeft)
+    @racer.move_right if button_down?(Gosu::KbRight)
+  end
 end
 
 window = SpaceRace.new
