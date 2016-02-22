@@ -3,7 +3,7 @@ require_relative "racer"
 require_relative "opponent"
 
 class SpaceRace < Gosu::Window
-  WIDTH, HEIGHT = 400, 600
+  WIDTH, HEIGHT = 200, 600
   OPPONENT_FREQUENCY = 0.01
 
   def initialize
