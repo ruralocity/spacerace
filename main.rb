@@ -9,6 +9,7 @@ class SpaceRace < Gosu::Window
   def initialize
     super(WIDTH, HEIGHT)
     self.caption = "Space Race"
+    @background = Gosu::Image.new("images/background.png", tilable: true)
     @racer = Racer.new(self)
     @opponents = []
     @score = 0
@@ -16,6 +17,7 @@ class SpaceRace < Gosu::Window
   end
 
   def draw
+    @background.draw(0, 0, 0)
     @racer.draw
     @opponents.each do |opponent|
       opponent.draw
