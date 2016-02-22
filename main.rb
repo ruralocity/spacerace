@@ -14,6 +14,7 @@ class SpaceRace < Gosu::Window
     @racer = Racer.new(self)
     @opponents = []
     @explosions = []
+    @passing_sound = Gosu::Sample.new("sounds/passing.ogg")
     @score = 0
     @score_display = Gosu::Font.new(28)
     @scene = :game
@@ -70,6 +71,7 @@ class SpaceRace < Gosu::Window
       if (opponent.y + opponent.radius > @racer.y + @racer.radius) && !opponent.passed
         @score += 1
         opponent.passed = true
+        @passing_sound.play
       end
 
       if collision?(opponent, @racer)
