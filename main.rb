@@ -1,6 +1,7 @@
 require "gosu"
 require_relative "racer"
 require_relative "opponent"
+require_relative "explosion"
 
 class SpaceRace < Gosu::Window
   WIDTH, HEIGHT = 200, 600
@@ -12,21 +13,49 @@ class SpaceRace < Gosu::Window
     @background = Gosu::Image.new("images/background.png", tilable: true)
     @racer = Racer.new(self)
     @opponents = []
+    @explosions = []
     @score = 0
     @score_display = Gosu::Font.new(28)
     @scene = :game
   end
 
   def draw
-    case @scene
-    when :game
-      draw_game
-    when :end
+    if game_over?
       draw_end
+    else
+      draw_game
     end
   end
 
   def update
+    if game_over?
+      update_end
+    else
+      update_game
+    end
+  end
+
+  private
+
+  def game_over?
+    @scene == :end && @explosions.empty?
+  end
+
+  def draw_game
+    @background.draw(0, 0, 0)
+    @racer.draw
+    @opponents.each do |opponent|
+      opponent.draw
+    end
+
+    @explosions.each do |explosion|
+      explosion.draw
+    end
+
+    @score_display.draw(@score, 160, 20, 1, 1, 1, Gosu::Color::AQUA)
+  end
+
+  def update_game
     @racer.move_left if button_down?(Gosu::KbLeft)
     @racer.move_right if button_down?(Gosu::KbRight)
     @racer.move
@@ -44,6 +73,8 @@ class SpaceRace < Gosu::Window
       end
 
       if collision?(opponent, @racer)
+        @explosions.push Explosion.new(self, opponent)
+        @explosions.push Explosion.new(self, @racer)
         @scene = :end
       end
     end
@@ -53,18 +84,10 @@ class SpaceRace < Gosu::Window
         @opponents.delete opponent
       end
     end
-  end
 
-  private
-
-  def draw_game
-    @background.draw(0, 0, 0)
-    @racer.draw
-    @opponents.each do |opponent|
-      opponent.draw
+    @explosions.each do |explosion|
+      @explosions.delete explosion if explosion.finished
     end
-
-    @score_display.draw(@score, 160, 20, 1, 1, 1, Gosu::Color::AQUA)
   end
 
   def draw_end
@@ -73,6 +96,10 @@ class SpaceRace < Gosu::Window
     @game_over.draw("Game Over", 10, 200, 3)
     @game_over.draw("Final Score:", 10, 250, 3)
     @game_over.draw("#{@score}", 10, 300, 3)
+  end
+
+  def update_end
+    # NOOP
   end
 
   def collision?(entity1, entity2)
