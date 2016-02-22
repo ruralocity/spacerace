@@ -42,6 +42,12 @@ class SpaceRace < Gosu::Window
         opponent.passed = true
       end
     end
+
+    @opponents.dup.each do |opponent|
+      if opponent.y > HEIGHT + opponent.radius
+        @opponents.delete opponent
+      end
+    end
   end
 end
 
