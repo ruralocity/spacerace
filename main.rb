@@ -15,6 +15,7 @@ class SpaceRace < Gosu::Window
     @opponents = []
     @explosions = []
     @passing_sound = Gosu::Sample.new("sounds/passing.ogg")
+    @explosion_sound = Gosu::Sample.new("sounds/explosion.ogg")
     @score = 0
     @score_display = Gosu::Font.new(28)
     @scene = :game
@@ -77,6 +78,7 @@ class SpaceRace < Gosu::Window
       if collision?(opponent, @racer)
         @explosions.push Explosion.new(self, opponent)
         @explosions.push Explosion.new(self, @racer)
+        @explosion_sound.play
         @scene = :end
       end
     end
