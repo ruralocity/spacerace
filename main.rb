@@ -11,6 +11,8 @@ class SpaceRace < Gosu::Window
     self.caption = "Space Race"
     @racer = Racer.new(self)
     @opponents = []
+    @score = 0
+    @score_display = Gosu::Font.new(28)
   end
 
   def draw
@@ -18,6 +20,8 @@ class SpaceRace < Gosu::Window
     @opponents.each do |opponent|
       opponent.draw
     end
+
+    @score_display.draw(@score, 160, 20, 1, 1, 1, Gosu::Color::AQUA)
   end
 
   def update
@@ -28,8 +32,13 @@ class SpaceRace < Gosu::Window
     if rand < OPPONENT_FREQUENCY
       @opponents.push Opponent.new(self)
     end
+
     @opponents.each do |opponent|
       opponent.move
+      if (opponent.y + opponent.radius > @racer.y + @racer.radius) && !opponent.passed
+        @score += 1
+        opponent.passed = true
+      end
     end
   end
 end

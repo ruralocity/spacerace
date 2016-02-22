@@ -1,5 +1,5 @@
 class Racer
-  attr_reader :x, :y
+  attr_reader :x, :y, :radius
 
   def initialize(window)
     @image = Gosu::Image.new("images/ship.png")
