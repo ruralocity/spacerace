@@ -14,4 +14,5 @@ $ bundle
 $ ruby main.rb
 ```
 
-Steer the ship with the left and right arrow keys.
+Steer the ship with the left and right arrow keys. Dodge as many opponents as
+you can before you run out of fuel!

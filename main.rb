@@ -6,6 +6,7 @@ require_relative "explosion"
 class SpaceRace < Gosu::Window
   WIDTH, HEIGHT = 200, 600
   OPPONENT_FREQUENCY = 0.01
+  TIME_LIMIT = 60 # seconds
 
   def initialize
     super(WIDTH, HEIGHT)
@@ -17,8 +18,9 @@ class SpaceRace < Gosu::Window
     @passing_sound = Gosu::Sample.new("sounds/passing.ogg")
     @explosion_sound = Gosu::Sample.new("sounds/explosion.ogg")
     @score = 0
-    @score_display = Gosu::Font.new(28)
+    @display = Gosu::Font.new(28)
     @scene = :game
+    @time_left = TIME_LIMIT
   end
 
   def draw
@@ -40,7 +42,7 @@ class SpaceRace < Gosu::Window
   private
 
   def game_over?
-    @scene == :end && @explosions.empty?
+    (@scene == :end && @explosions.empty?) || @time_left < 0
   end
 
   def draw_game
@@ -54,7 +56,8 @@ class SpaceRace < Gosu::Window
       explosion.draw
     end
 
-    @score_display.draw(@score, 160, 20, 1, 1, 1, Gosu::Color::AQUA)
+    @display.draw(@score, 10, 550, 1, 1, 1, Gosu::Color::AQUA)
+    @display.draw(@time_left, 160, 20, 1, 1, 1, Gosu::Color::AQUA)
   end
 
   def update_game
@@ -92,6 +95,8 @@ class SpaceRace < Gosu::Window
     @explosions.each do |explosion|
       @explosions.delete explosion if explosion.finished
     end
+
+    @time_left = TIME_LIMIT - Gosu.milliseconds / 1000
   end
 
   def draw_end
