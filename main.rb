@@ -2,10 +2,12 @@ require "gosu"
 require_relative "racer"
 require_relative "opponent"
 require_relative "explosion"
+require_relative "fuel_pellet"
 
 class SpaceRace < Gosu::Window
   WIDTH, HEIGHT = 200, 600
   OPPONENT_FREQUENCY = 0.01
+  FUEL_FREQUENCY = 0.001
   TIME_LIMIT = 60 # seconds
 
   def initialize
@@ -15,9 +17,12 @@ class SpaceRace < Gosu::Window
     @racer = Racer.new(self)
     @opponents = []
     @explosions = []
+    @fuel_pellets = []
     @passing_sound = Gosu::Sample.new("sounds/passing.ogg")
     @explosion_sound = Gosu::Sample.new("sounds/explosion.ogg")
+    @fuelup_sound = Gosu::Sample.new("sounds/fuel.ogg")
     @score = 0
+    @bonus_time = 0
     @display = Gosu::Font.new(28)
     @scene = :game
     @time_left = TIME_LIMIT
@@ -52,15 +57,20 @@ class SpaceRace < Gosu::Window
       opponent.draw
     end
 
+    @fuel_pellets.each do |pellet|
+      pellet.draw
+    end
+
     @explosions.each do |explosion|
       explosion.draw
     end
 
     @display.draw(@score, 10, 550, 1, 1, 1, Gosu::Color::AQUA)
-    @display.draw(@time_left, 160, 20, 1, 1, 1, Gosu::Color::AQUA)
+    @display.draw(@time_left, 10, 20, 1, 1, 1, Gosu::Color::AQUA)
   end
 
   def update_game
+    time_to_add = 0
     @racer.move_left if button_down?(Gosu::KbLeft)
     @racer.move_right if button_down?(Gosu::KbRight)
     @racer.move
@@ -96,7 +106,27 @@ class SpaceRace < Gosu::Window
       @explosions.delete explosion if explosion.finished
     end
 
-    @time_left = TIME_LIMIT - Gosu.milliseconds / 1000
+    if rand < FUEL_FREQUENCY && @fuel_pellets.empty?
+      @fuel_pellets.push FuelPellet.new(self)
+    end
+
+    @fuel_pellets.each do |pellet|
+      pellet.move
+
+      if collision?(pellet, @racer)
+        @fuelup_sound.play(0.3)
+        @fuel_pellets.delete pellet
+        @bonus_time += 10
+      end
+    end
+
+    @fuel_pellets.dup.each do |pellet|
+      if pellet.y > HEIGHT
+        @fuel_pellets.delete pellet
+      end
+    end
+
+    @time_left = TIME_LIMIT - Gosu.milliseconds / 1000 + @bonus_time
   end
 
   def draw_end
