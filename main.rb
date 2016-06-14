@@ -14,6 +14,8 @@ class SpaceRace < Gosu::Window
     super(WIDTH, HEIGHT)
     self.caption = "Space Race"
     @background = Gosu::Image.new("images/background.png", tilable: true)
+    @game_music = Gosu::Song.new("sounds/thinking_tension_c.mp3")
+    @game_music.play(true)
     @racer = Racer.new(self)
     @opponents = []
     @explosions = []
